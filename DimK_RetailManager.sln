@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.539
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DKRDataManager", "DKRDataManager\DKRDataManager.csproj", "{085E0BB8-9FAA-4ECF-995C-8B72A45FBC0E}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DKRData", "DKRData\DKRData.sqlproj", "{613E3B92-164F-41DC-A0F8-1350C607C08D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,12 @@ Global
 		{085E0BB8-9FAA-4ECF-995C-8B72A45FBC0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{085E0BB8-9FAA-4ECF-995C-8B72A45FBC0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{085E0BB8-9FAA-4ECF-995C-8B72A45FBC0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{613E3B92-164F-41DC-A0F8-1350C607C08D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{613E3B92-164F-41DC-A0F8-1350C607C08D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{613E3B92-164F-41DC-A0F8-1350C607C08D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{613E3B92-164F-41DC-A0F8-1350C607C08D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{613E3B92-164F-41DC-A0F8-1350C607C08D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{613E3B92-164F-41DC-A0F8-1350C607C08D}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
