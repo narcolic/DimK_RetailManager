@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DKRDataManager", "DKRDataMa
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DKRData", "DKRData\DKRData.sqlproj", "{613E3B92-164F-41DC-A0F8-1350C607C08D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DKRDesktopUI", "DKRDesktopUI\DKRDesktopUI.csproj", "{7E07D4B0-43C4-4300-ABB0-27DD100E9B3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{613E3B92-164F-41DC-A0F8-1350C607C08D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{613E3B92-164F-41DC-A0F8-1350C607C08D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{613E3B92-164F-41DC-A0F8-1350C607C08D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{7E07D4B0-43C4-4300-ABB0-27DD100E9B3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E07D4B0-43C4-4300-ABB0-27DD100E9B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E07D4B0-43C4-4300-ABB0-27DD100E9B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E07D4B0-43C4-4300-ABB0-27DD100E9B3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
