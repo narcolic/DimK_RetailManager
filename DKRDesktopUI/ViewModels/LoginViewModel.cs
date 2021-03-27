@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using DKRDesktopUI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,14 @@ namespace DKRDesktopUI.ViewModels
 {
     public class LoginViewModel : Screen
     {
+        private readonly IAPIHelper _apiHelper;
         private string _userName;
         private string _password;
+
+        public LoginViewModel(IAPIHelper apiHelper)
+        {
+            _apiHelper = apiHelper;
+        }
 
         public string UserName
         {
@@ -36,9 +43,16 @@ namespace DKRDesktopUI.ViewModels
 
         public bool CanLogin => !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password);
 
-        public void Login()
+        public async Task LoginAsync()
         {
-            Console.WriteLine();
+            try
+            {
+                var result = await _apiHelper.AuthenticateAsync(UserName, Password);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
