@@ -1,11 +1,11 @@
 ﻿using Caliburn.Micro;
 using DKRDesktopUI.Helpers;
+using DKRDesktopUI.Library.Api;
+using DKRDesktopUI.Library.Models;
 using DKRDesktopUI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -25,6 +25,11 @@ namespace DKRDesktopUI
             "PasswordChanged");
         }
 
+        protected override void BuildUp(object instance)
+        {
+            _container.BuildUp(instance);
+        }
+
         protected override void Configure()
         {
             _container.Instance(_container);
@@ -32,6 +37,7 @@ namespace DKRDesktopUI
             _container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
+                .Singleton<ILoggedInUserModel, LoggedInUserModel>()
                 .Singleton<IAPIHelper, APIHelper>();
 
             GetType().Assembly.GetTypes()
@@ -42,9 +48,9 @@ namespace DKRDesktopUI
                     viewModelType, viewModelType.ToString(), viewModelType));
         }
 
-        protected override void OnStartup(object sender, StartupEventArgs e)
+        protected override IEnumerable<object> GetAllInstances(Type service)
         {
-            DisplayRootViewFor<ShellViewModel>();
+            return _container.GetAllInstances(service);
         }
 
         protected override object GetInstance(Type service, string key)
@@ -52,14 +58,9 @@ namespace DKRDesktopUI
             return _container.GetInstance(service, key);
         }
 
-        protected override IEnumerable<object> GetAllInstances(Type service)
+        protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            return _container.GetAllInstances(service);
-        }
-
-        protected override void BuildUp(object instance)
-        {
-            _container.BuildUp(instance);
+            DisplayRootViewFor<ShellViewModel>();
         }
     }
 }

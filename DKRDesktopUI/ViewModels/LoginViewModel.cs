@@ -1,5 +1,5 @@
 ﻿using Caliburn.Micro;
-using DKRDesktopUI.Helpers;
+using DKRDesktopUI.Library.Api;
 using System;
 using System.Threading.Tasks;
 
@@ -60,6 +60,9 @@ namespace DKRDesktopUI.ViewModels
             {
                 ErrorMessage = string.Empty;
                 var result = await _apiHelper.AuthenticateAsync(UserName, Password);
+
+                //capture user info
+                await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
             }
             catch (Exception ex)
             {
