@@ -6,7 +6,7 @@ namespace DKRDesktopUI.ViewModels
     public class SalesViewModel : Screen
     {
         private BindingList<string> _cart;
-        private string _itemQuantity;
+        private int _itemQuantity;
         private BindingList<string> _products;
 
         public bool CanAddToCart { get; }
@@ -24,7 +24,7 @@ namespace DKRDesktopUI.ViewModels
             }
         }
 
-        public string ItemQuantity
+        public int ItemQuantity
         {
             get { return _itemQuantity; }
             set

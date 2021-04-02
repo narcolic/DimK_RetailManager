@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using DKRDesktopUI.EventModels;
 using DKRDesktopUI.Library.Api;
 using System;
 using System.Threading.Tasks;
@@ -8,13 +9,15 @@ namespace DKRDesktopUI.ViewModels
     public class LoginViewModel : Screen
     {
         private readonly IAPIHelper _apiHelper;
+        private readonly IEventAggregator _events;
         private string _errorMessage;
         private string _password;
         private string _userName;
 
-        public LoginViewModel(IAPIHelper apiHelper)
+        public LoginViewModel(IAPIHelper apiHelper, IEventAggregator events)
         {
             _apiHelper = apiHelper;
+            _events = events;
         }
 
         public bool CanLogin => !string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password);
@@ -63,6 +66,8 @@ namespace DKRDesktopUI.ViewModels
 
                 //capture user info
                 await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
+
+                _events.PublishOnUIThread(new LogOnEvent());
             }
             catch (Exception ex)
             {
