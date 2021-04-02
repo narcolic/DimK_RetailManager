@@ -1,20 +1,30 @@
 ﻿using Caliburn.Micro;
+using DKRDesktopUI.Library.Api;
+using DKRDesktopUI.Library.Models;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace DKRDesktopUI.ViewModels
 {
     public class SalesViewModel : Screen
     {
-        private BindingList<string> _cart;
+        private readonly IProductEndpoint _productEndpoint;
+        private BindingList<ProductModel> _cart;
         private int _itemQuantity;
-        private BindingList<string> _products;
+        private BindingList<ProductModel> _products;
+
+        public SalesViewModel(IProductEndpoint productEndpoint)
+        {
+            _productEndpoint = productEndpoint;
+        }
 
         public bool CanAddToCart { get; }
 
-        public bool CanRemoveFromCart { get; }
         public bool CanCheckOut { get; }
 
-        public BindingList<string> Cart
+        public bool CanRemoveFromCart { get; }
+
+        public BindingList<ProductModel> Cart
         {
             get { return _cart; }
             set
@@ -34,7 +44,7 @@ namespace DKRDesktopUI.ViewModels
             }
         }
 
-        public BindingList<string> Products
+        public BindingList<ProductModel> Products
         {
             get { return _products; }
             set
@@ -45,10 +55,16 @@ namespace DKRDesktopUI.ViewModels
         }
 
         public string SubTotal { get; } = "$0.00";
+
         public string Tax { get; } = "$0.00";
+
         public string Total { get; } = "$0.00";
 
         public void AddToCart()
+        {
+        }
+
+        public void CheckOut()
         {
         }
 
@@ -56,8 +72,12 @@ namespace DKRDesktopUI.ViewModels
         {
         }
 
-        public void CheckOut()
+        protected override async void OnViewLoaded(object view)
         {
+            base.OnViewLoaded(view);
+            await LoadProductsAsync();
         }
+
+        private async Task LoadProductsAsync() => Products = new BindingList<ProductModel>(await _productEndpoint.GetAllAsync());
     }
 }

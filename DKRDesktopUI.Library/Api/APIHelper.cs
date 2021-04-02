@@ -19,6 +19,8 @@ namespace DKRDesktopUI.Library.Api
             _loggedInUser = loggedInUser;
         }
 
+        public HttpClient ApiClient => _apiClient;
+
         public async Task<AuthenticatedUser> AuthenticateAsync(string username, string password)
         {
             var data = new FormUrlEncodedContent(new[] {
