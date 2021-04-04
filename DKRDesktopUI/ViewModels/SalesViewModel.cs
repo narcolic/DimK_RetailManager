@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using DKRDesktopUI.Library.Api;
+using DKRDesktopUI.Library.Helpers;
 using DKRDesktopUI.Library.Models;
 using System.ComponentModel;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace DKRDesktopUI.ViewModels
 {
     public class SalesViewModel : Screen
     {
+        private readonly IConfigHelper _configHelper;
         private readonly IProductEndpoint _productEndpoint;
         private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
         private int _itemQuantity = 1;
@@ -16,9 +18,10 @@ namespace DKRDesktopUI.ViewModels
 
         private ProductModel _selectedProduct;
 
-        public SalesViewModel(IProductEndpoint productEndpoint)
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
         {
             _productEndpoint = productEndpoint;
+            _configHelper = configHelper;
         }
 
         public bool CanAddToCart => ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity;
@@ -69,11 +72,11 @@ namespace DKRDesktopUI.ViewModels
             }
         }
 
-        public string SubTotal => Cart.Sum(i => i.Product.RetailPrice * i.QuantityInCart).ToString("C");
+        public string SubTotal => CalculateSubTotal().ToString("C");
 
-        public string Tax { get; } = "$0.00";
+        public string Tax => CalculateTax().ToString("C");
 
-        public string Total { get; } = "$0.00";
+        public string Total => (CalculateSubTotal() + CalculateTax()).ToString("C");
 
         public void AddToCart()
         {
@@ -95,6 +98,8 @@ namespace DKRDesktopUI.ViewModels
             Cart.ResetBindings();
 
             NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
         }
 
         public void CheckOut()
@@ -104,6 +109,8 @@ namespace DKRDesktopUI.ViewModels
         public void RemoveFromCart()
         {
             NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
         }
 
         protected override async void OnViewLoaded(object view)
@@ -111,6 +118,10 @@ namespace DKRDesktopUI.ViewModels
             base.OnViewLoaded(view);
             await LoadProductsAsync();
         }
+
+        private decimal CalculateSubTotal() => Cart.Sum(i => i.Product.RetailPrice * i.QuantityInCart);
+
+        private decimal CalculateTax() => Cart.Sum(i => i.Product.RetailPrice * i.QuantityInCart * (i.Product.IsTaxable ? _configHelper.GetTaxRate() : 0));
 
         private async Task LoadProductsAsync() => Products = new BindingList<ProductModel>(await _productEndpoint.GetAllAsync());
     }

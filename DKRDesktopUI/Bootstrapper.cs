@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using DKRDesktopUI.Helpers;
 using DKRDesktopUI.Library.Api;
+using DKRDesktopUI.Library.Helpers;
 using DKRDesktopUI.Library.Models;
 using DKRDesktopUI.ViewModels;
 using System;
@@ -39,6 +40,7 @@ namespace DKRDesktopUI
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
                 .Singleton<ILoggedInUserModel, LoggedInUserModel>()
+                .Singleton<IConfigHelper, ConfigHelper>()
                 .Singleton<IAPIHelper, APIHelper>();
 
             GetType().Assembly.GetTypes()
