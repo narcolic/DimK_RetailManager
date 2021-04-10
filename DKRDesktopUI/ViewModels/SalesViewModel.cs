@@ -20,7 +20,7 @@ namespace DKRDesktopUI.ViewModels
         private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
         private int _itemQuantity = 1;
         private BindingList<ProductDisplayModel> _products;
-
+        private CartItemDisplayModel _selectedCartItem;
         private ProductDisplayModel _selectedProduct;
 
         public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint,
@@ -36,7 +36,7 @@ namespace DKRDesktopUI.ViewModels
 
         public bool CanCheckOut => Cart.Count > 0;
 
-        public bool CanRemoveFromCart { get; }
+        public bool CanRemoveFromCart => SelectedCartItem != null && SelectedCartItem.Product.QuantityInStock > 0;
 
         public BindingList<CartItemDisplayModel> Cart
         {
@@ -66,6 +66,17 @@ namespace DKRDesktopUI.ViewModels
             {
                 _products = value;
                 NotifyOfPropertyChange(() => Products);
+            }
+        }
+
+        public CartItemDisplayModel SelectedCartItem
+        {
+            get { return _selectedCartItem; }
+            set
+            {
+                _selectedCartItem = value;
+                NotifyOfPropertyChange(() => SelectedCartItem);
+                NotifyOfPropertyChange(() => CanRemoveFromCart);
             }
         }
 
@@ -124,6 +135,17 @@ namespace DKRDesktopUI.ViewModels
 
         public void RemoveFromCart()
         {
+            SelectedCartItem.Product.QuantityInStock += 1;
+
+            if (SelectedCartItem.QuantityInCart > 1)
+            {
+                SelectedCartItem.QuantityInCart -= 1;
+            }
+            else
+            {
+                Cart.Remove(SelectedCartItem);
+            }
+
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
