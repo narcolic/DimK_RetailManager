@@ -1,7 +1,9 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using DKRDesktopUI.Library.Api;
 using DKRDesktopUI.Library.Helpers;
 using DKRDesktopUI.Library.Models;
+using DKRDesktopUI.Models;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -12,19 +14,22 @@ namespace DKRDesktopUI.ViewModels
     public class SalesViewModel : Screen
     {
         private readonly IConfigHelper _configHelper;
+        private readonly IMapper _mapper;
         private readonly IProductEndpoint _productEndpoint;
         private readonly ISaleEndpoint _saleEndpoint;
-        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+        private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
         private int _itemQuantity = 1;
-        private BindingList<ProductModel> _products;
+        private BindingList<ProductDisplayModel> _products;
 
-        private ProductModel _selectedProduct;
+        private ProductDisplayModel _selectedProduct;
 
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint)
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint,
+            IMapper mapper)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
             _saleEndpoint = saleEndpoint;
+            _mapper = mapper;
         }
 
         public bool CanAddToCart => ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity;
@@ -33,7 +38,7 @@ namespace DKRDesktopUI.ViewModels
 
         public bool CanRemoveFromCart { get; }
 
-        public BindingList<CartItemModel> Cart
+        public BindingList<CartItemDisplayModel> Cart
         {
             get { return _cart; }
             set
@@ -54,7 +59,7 @@ namespace DKRDesktopUI.ViewModels
             }
         }
 
-        public BindingList<ProductModel> Products
+        public BindingList<ProductDisplayModel> Products
         {
             get { return _products; }
             set
@@ -64,7 +69,7 @@ namespace DKRDesktopUI.ViewModels
             }
         }
 
-        public ProductModel SelectedProduct
+        public ProductDisplayModel SelectedProduct
         {
             get { return _selectedProduct; }
             set
@@ -90,7 +95,7 @@ namespace DKRDesktopUI.ViewModels
             }
             else
             {
-                Cart.Add(new CartItemModel()
+                Cart.Add(new CartItemDisplayModel()
                 {
                     Product = SelectedProduct,
                     QuantityInCart = ItemQuantity
@@ -98,7 +103,6 @@ namespace DKRDesktopUI.ViewModels
             }
             SelectedProduct.QuantityInStock -= ItemQuantity;
             ItemQuantity = 1;
-            Cart.ResetBindings();
 
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
@@ -108,7 +112,7 @@ namespace DKRDesktopUI.ViewModels
 
         public async Task CheckOutAsync()
         {
-            var sale = new SaleModel() { SaleDetails = new List<SaleDetailModel>()};
+            var sale = new SaleModel() { SaleDetails = new List<SaleDetailModel>() };
             sale.SaleDetails.AddRange(Cart.Select(item => new SaleDetailModel()
             {
                 ProductId = item.Product.Id,
@@ -136,6 +140,6 @@ namespace DKRDesktopUI.ViewModels
 
         private decimal CalculateTax() => Cart.Sum(i => i.Product.RetailPrice * i.QuantityInCart * (i.Product.IsTaxable ? _configHelper.GetTaxRate() : 0));
 
-        private async Task LoadProductsAsync() => Products = new BindingList<ProductModel>(await _productEndpoint.GetAllAsync());
+        private async Task LoadProductsAsync() => Products = new BindingList<ProductDisplayModel>(_mapper.Map<List<ProductDisplayModel>>(await _productEndpoint.GetAllAsync()));
     }
 }

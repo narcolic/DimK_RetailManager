@@ -1,8 +1,10 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using DKRDesktopUI.Helpers;
 using DKRDesktopUI.Library.Api;
 using DKRDesktopUI.Library.Helpers;
 using DKRDesktopUI.Library.Models;
+using DKRDesktopUI.Models;
 using DKRDesktopUI.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -33,6 +35,8 @@ namespace DKRDesktopUI
 
         protected override void Configure()
         {
+            _container.Instance(ConfigureAutomapper());
+
             _container.Instance(_container)
                 .PerRequest<IProductEndpoint, ProductEndpoint>()
                 .PerRequest<ISaleEndpoint, SaleEndpoint>();
@@ -65,6 +69,17 @@ namespace DKRDesktopUI
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
             DisplayRootViewFor<ShellViewModel>();
+        }
+
+        private static IMapper ConfigureAutomapper()
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ProductModel, ProductDisplayModel>();
+                cfg.CreateMap<CartItemModel, CartItemDisplayModel>();
+            });
+
+            return config.CreateMapper();
         }
     }
 }
