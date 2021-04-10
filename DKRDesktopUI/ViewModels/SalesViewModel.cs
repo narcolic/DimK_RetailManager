@@ -2,6 +2,7 @@
 using DKRDesktopUI.Library.Api;
 using DKRDesktopUI.Library.Helpers;
 using DKRDesktopUI.Library.Models;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,21 +13,23 @@ namespace DKRDesktopUI.ViewModels
     {
         private readonly IConfigHelper _configHelper;
         private readonly IProductEndpoint _productEndpoint;
+        private readonly ISaleEndpoint _saleEndpoint;
         private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
         private int _itemQuantity = 1;
         private BindingList<ProductModel> _products;
 
         private ProductModel _selectedProduct;
 
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
+            _saleEndpoint = saleEndpoint;
         }
 
         public bool CanAddToCart => ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity;
 
-        public bool CanCheckOut { get; }
+        public bool CanCheckOut => Cart.Count > 0;
 
         public bool CanRemoveFromCart { get; }
 
@@ -100,10 +103,19 @@ namespace DKRDesktopUI.ViewModels
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
         }
 
-        public void CheckOut()
+        public async Task CheckOutAsync()
         {
+            var sale = new SaleModel() { SaleDetails = new List<SaleDetailModel>()};
+            sale.SaleDetails.AddRange(Cart.Select(item => new SaleDetailModel()
+            {
+                ProductId = item.Product.Id,
+                Quantity = item.QuantityInCart
+            }));
+
+            await _saleEndpoint.PostSaleAsync(sale);
         }
 
         public void RemoveFromCart()
@@ -111,6 +123,7 @@ namespace DKRDesktopUI.ViewModels
             NotifyOfPropertyChange(() => SubTotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
         }
 
         protected override async void OnViewLoaded(object view)

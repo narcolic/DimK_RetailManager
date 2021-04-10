@@ -26,5 +26,13 @@ namespace DKRDataManager.Library.Internal.DataAccess
                 connection.Execute(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
             }
         }
+
+        public int SaveDataScalar<T>(string storedProcedure, T parameters, string connectionStringName)
+        {
+            using (IDbConnection connection = new SqlConnection(GetConnectionString(connectionStringName)))
+            {
+                return connection.ExecuteScalar<int>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }

@@ -11,8 +11,8 @@ namespace DKRDesktopUI.ViewModels
         private readonly IAPIHelper _apiHelper;
         private readonly IEventAggregator _events;
         private string _errorMessage;
-        private string _password;
-        private string _userName;
+        private string _password = "Pwd123123.";
+        private string _userName = "ddd@gmail.com";
 
         public LoginViewModel(IAPIHelper apiHelper, IEventAggregator events)
         {

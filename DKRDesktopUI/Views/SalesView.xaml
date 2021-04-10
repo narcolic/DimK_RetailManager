@@ -40,7 +40,8 @@
                         <StackPanel Orientation="Horizontal">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Price: " FontSize="14"/>
-                                <TextBlock Text="{Binding RetailPrice, StringFormat='{}{0:C}'}" FontSize="14"/>
+                                <TextBlock Text="{Binding RetailPrice, StringFormat='{}{0:C}'}" 
+                                           FontSize="14"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="5 0 0 0">
                                 <TextBlock Text="Qty: " FontSize="14"/>
@@ -85,6 +86,7 @@
             <TextBlock x:Name="Total" Text="0.00" Grid.Row="2" Grid.Column="2" TextAlignment="Right"/>
         </DockPanel>
 
-        <Button x:Name="CheckOut" Grid.Row="6" Grid.Column="2" Content="Check Out" Margin="0 20 0 0" Padding="5"/>
+        <Button x:Name="CheckOut" Grid.Row="6" Grid.Column="2" Content="Check Out" Margin="0 20 0 0" 
+                Padding="5"/>
     </Grid>
 </UserControl>
