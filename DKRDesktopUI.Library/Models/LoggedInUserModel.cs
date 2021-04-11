@@ -10,5 +10,15 @@ namespace DKRDesktopUI.Library.Models
         public string Id { get; set; }
         public string LastName { get; set; }
         public string Token { get; set; }
+
+        public void LogOffUser()
+        {
+            CreatedDate = DateTime.MinValue;
+            EmailAddress = string.Empty;
+            FirstName = string.Empty;
+            Id = string.Empty;
+            LastName = string.Empty;
+            Token = string.Empty;
+        }
     }
 }

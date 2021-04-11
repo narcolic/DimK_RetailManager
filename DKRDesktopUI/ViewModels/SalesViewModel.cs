@@ -131,6 +131,8 @@ namespace DKRDesktopUI.ViewModels
             }));
 
             await _saleEndpoint.PostSaleAsync(sale);
+
+            await ResetSalesViewModelASync();
         }
 
         public void RemoveFromCart()
@@ -150,6 +152,7 @@ namespace DKRDesktopUI.ViewModels
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
             NotifyOfPropertyChange(() => CanCheckOut);
+            NotifyOfPropertyChange(() => CanAddToCart);
         }
 
         protected override async void OnViewLoaded(object view)
@@ -163,5 +166,16 @@ namespace DKRDesktopUI.ViewModels
         private decimal CalculateTax() => Cart.Sum(i => i.Product.RetailPrice * i.QuantityInCart * (i.Product.IsTaxable ? _configHelper.GetTaxRate() : 0));
 
         private async Task LoadProductsAsync() => Products = new BindingList<ProductDisplayModel>(_mapper.Map<List<ProductDisplayModel>>(await _productEndpoint.GetAllAsync()));
+
+        private async Task ResetSalesViewModelASync()
+        {
+            Cart.Clear();
+            await LoadProductsAsync();
+
+            NotifyOfPropertyChange(() => SubTotal);
+            NotifyOfPropertyChange(() => Tax);
+            NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckOut);
+        }
     }
 }
