@@ -8,6 +8,6 @@ namespace DKRDataManager.Controllers
     [Authorize]
     public class ProductController : ApiController
     {
-        public List<ProductModel> Get() => new ProductData().GetProducts();
+        public List<ProductModel> Get() => new ProductData().Products;
     }
 }

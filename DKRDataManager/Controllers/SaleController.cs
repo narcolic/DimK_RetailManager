@@ -2,6 +2,7 @@
 using DKRDataManager.Library.Models;
 using Microsoft.AspNet.Identity;
 using System;
+using System.Collections.Generic;
 using System.Web.Http;
 
 namespace DKRDataManager.Controllers
@@ -19,5 +20,8 @@ namespace DKRDataManager.Controllers
             string userId = RequestContext.Principal.Identity.GetUserId();
             new SaleData().SaveSale(sale, userId);
         }
+
+        [Route("GetSalesReport")]
+        public List<SaleReportModel> GetSalesReport() => new SaleData().GetSalesReport();
     }
 }

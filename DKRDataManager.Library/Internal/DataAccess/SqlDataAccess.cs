@@ -20,7 +20,23 @@ namespace DKRDataManager.Library.Internal.DataAccess
             _connection?.Close();
         }
 
-        public void Dispose() => CommitTransaction();
+        public void Dispose()
+        {
+            if (_connection.State != ConnectionState.Closed)
+            {
+                try
+                {
+                    CommitTransaction();
+                }
+                catch
+                {
+                    //Log exception
+                }
+            }
+
+            _transaction = null;
+            _connection = null;
+        }
 
         public string GetConnectionString(string name) => ConfigurationManager.ConnectionStrings[name].ConnectionString;
 

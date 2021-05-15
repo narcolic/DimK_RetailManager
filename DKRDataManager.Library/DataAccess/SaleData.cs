@@ -7,6 +7,8 @@ namespace DKRDataManager.Library.DataAccess
 {
     public class SaleData
     {
+        public List<SaleReportModel> GetSalesReport() => new SqlDataAccess().LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "DKRData");
+
         public void SaveSale(SaleModel saleInfo, string cashierId)
         {
             var saleDetails = new List<SaleDetailDbModel>();

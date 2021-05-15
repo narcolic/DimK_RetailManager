@@ -7,14 +7,9 @@ namespace DKRDataManager.Library.DataAccess
 {
     public class ProductData
     {
-        public ProductModel GetProductById(int productId)
-        {
-            return new SqlDataAccess().LoadData<ProductModel, dynamic>("dbo.spProduct_GetById", new { Id = productId }, "DKRData").FirstOrDefault();
-        }
+        public List<ProductModel> Products => new SqlDataAccess().LoadData<ProductModel, dynamic>("dbo.spProduct_GetAll", new { }, "DKRData");
 
-        public List<ProductModel> GetProducts()
-        {
-            return new SqlDataAccess().LoadData<ProductModel, dynamic>("dbo.spProduct_GetAll", new { }, "DKRData");
-        }
+        public ProductModel GetProductById(int productId) =>
+                    new SqlDataAccess().LoadData<ProductModel, dynamic>("dbo.spProduct_GetById", new { Id = productId }, "DKRData").FirstOrDefault();
     }
 }
