@@ -11,7 +11,6 @@ namespace DKRDataManager.Library.DataAccess
         {
             var saleDetails = new List<SaleDetailDbModel>();
             var products = new ProductData();
-            var sql = new SqlDataAccess();
 
             foreach (var item in saleInfo.SaleDetails)
             {
@@ -36,13 +35,25 @@ namespace DKRDataManager.Library.DataAccess
             };
             sale.Total = sale.SubTotal + sale.Tax;
 
-            int saleId = sql.SaveDataScalar("dbo.spSale_Insert", sale, "DKRData");
-
-            saleDetails.ForEach(item =>
+            using (SqlDataAccess sql = new SqlDataAccess())
             {
-                item.SaleId = saleId;
-                sql.SaveData("dbo.spSaleDetail_Insert", item, "DKRData");
-            });
+                try
+                {
+                    sql.StartTransaction("DKRData");
+                    int saleId = sql.SaveDataScalarInTransaction("dbo.spSale_Insert", sale);
+
+                    saleDetails.ForEach(item =>
+                    {
+                        item.SaleId = saleId;
+                        sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
+                    });
+                }
+                catch
+                {
+                    sql.RollBackTransaction();
+                    throw;
+                }
+            }
         }
     }
 }
