@@ -11,7 +11,7 @@ namespace DKRDesktopUI.Library.Models
         public string LastName { get; set; }
         public string Token { get; set; }
 
-        public void LogOffUser()
+        public void ResetUserModel()
         {
             CreatedDate = DateTime.MinValue;
             EmailAddress = string.Empty;

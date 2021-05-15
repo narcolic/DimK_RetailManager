@@ -1,20 +1,23 @@
 ﻿using Caliburn.Micro;
 using DKRDesktopUI.EventModels;
+using DKRDesktopUI.Library.Api;
 using DKRDesktopUI.Library.Models;
 
 namespace DKRDesktopUI.ViewModels
 {
     public class ShellViewModel : Conductor<object>, IHandle<LogOnEvent>
     {
+        private readonly IAPIHelper _apiHelper;
         private readonly IEventAggregator _events;
+        private readonly SalesViewModel _salesViewModel;
         private readonly ILoggedInUserModel _user;
-        private SalesViewModel _salesViewModel;
 
-        public ShellViewModel(IEventAggregator events, SalesViewModel salesViewModel, ILoggedInUserModel user)
+        public ShellViewModel(IEventAggregator events, SalesViewModel salesViewModel, ILoggedInUserModel user, IAPIHelper apiHelper)
         {
             _events = events;
             _salesViewModel = salesViewModel;
             _user = user;
+            _apiHelper = apiHelper;
             _events.Subscribe(this);
 
             ActivateItem(IoC.Get<LoginViewModel>());
@@ -35,7 +38,8 @@ namespace DKRDesktopUI.ViewModels
 
         public void LogOut()
         {
-            _user.LogOffUser();
+            _user.ResetUserModel();
+            _apiHelper.LogOffUser();
             ActivateItem(IoC.Get<LoginViewModel>());
             NotifyOfPropertyChange(() => IsLoggedIn);
         }

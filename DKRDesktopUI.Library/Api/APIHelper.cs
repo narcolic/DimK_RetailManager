@@ -66,6 +66,8 @@ namespace DKRDesktopUI.Library.Api
             }
         }
 
+        public void LogOffUser() => _apiClient.DefaultRequestHeaders.Clear();
+
         private void InitializeClient()
         {
             _apiClient = new HttpClient();
