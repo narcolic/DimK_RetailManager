@@ -5,7 +5,7 @@ using System.Web.Http;
 
 namespace DKRDataManager.Controllers
 {
-    [Authorize(Roles = "Manager")]
+    [Authorize]
     public class ProductController : ApiController
     {
         public List<ProductModel> Get() => new ProductData().Products;

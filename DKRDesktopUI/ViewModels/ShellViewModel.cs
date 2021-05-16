@@ -25,10 +25,7 @@ namespace DKRDesktopUI.ViewModels
 
         public bool IsLoggedIn => !string.IsNullOrWhiteSpace(_user.Token);
 
-        public void ExitApplication()
-        {
-            TryClose();
-        }
+        public void ExitApplication() => TryClose();
 
         public void Handle(LogOnEvent message)
         {
@@ -43,5 +40,7 @@ namespace DKRDesktopUI.ViewModels
             ActivateItem(IoC.Get<LoginViewModel>());
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
+
+        public void UserManagement() => ActivateItem(IoC.Get<UserDisplayViewModel>());
     }
 }
