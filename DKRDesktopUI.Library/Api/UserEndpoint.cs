@@ -15,6 +15,17 @@ namespace DKRDesktopUI.Library.Api
             _apiHelper = apiHelper;
         }
 
+        public async Task AddUserToRoleAsync(string userId, string role)
+        {
+            using (HttpResponseMessage response = await _apiHelper.ApiClient.PostAsJsonAsync("/api/User/Admin/AddRole", new { userId, role }))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception(response.ReasonPhrase);
+                }
+            }
+        }
+
         public async Task<List<UserModel>> GetAllAsync()
         {
             using (HttpResponseMessage response = await _apiHelper.ApiClient.GetAsync("/api/User/Admin/GetAllUsers"))
@@ -24,6 +35,32 @@ namespace DKRDesktopUI.Library.Api
                     return await response.Content.ReadAsAsync<List<UserModel>>();
                 }
                 else
+                {
+                    throw new Exception(response.ReasonPhrase);
+                }
+            }
+        }
+
+        public async Task<Dictionary<string, string>> GetAllRolesAsync()
+        {
+            using (HttpResponseMessage response = await _apiHelper.ApiClient.GetAsync("/api/User/Admin/GetAllRoles"))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsAsync<Dictionary<string, string>>();
+                }
+                else
+                {
+                    throw new Exception(response.ReasonPhrase);
+                }
+            }
+        }
+
+        public async Task RemoveUserFromRoleAsync(string userId, string role)
+        {
+            using (HttpResponseMessage response = await _apiHelper.ApiClient.PostAsJsonAsync("/api/User/Admin/RemoveRole", new { userId, role }))
+            {
+                if (!response.IsSuccessStatusCode)
                 {
                     throw new Exception(response.ReasonPhrase);
                 }

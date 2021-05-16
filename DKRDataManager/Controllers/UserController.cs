@@ -13,6 +13,29 @@ namespace DKRDataManager.Controllers
     public class UserController : ApiController
     {
         [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [Route("api/User/Admin/AddRole")]
+        public void AddRole(UserRolePairModel pairModel)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+                userManager.AddToRole(pairModel.UserId, pairModel.Role);
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet]
+        [Route("api/User/Admin/GetAllRoles")]
+        public Dictionary<string, string> GetAllRoles()
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                return context.Roles.ToDictionary(role => role.Id, role => role.Name);
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         [Route("api/User/Admin/GetAllUsers")]
         public List<ApplicationUserModel> GetAllUsers()
@@ -41,6 +64,18 @@ namespace DKRDataManager.Controllers
             UserData data = new UserData();
 
             return data.GetUserById(userID).First();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [Route("api/User/Admin/RemoveRole")]
+        public void RemoveRole(UserRolePairModel pairModel)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+                userManager.RemoveFromRole(pairModel.UserId, pairModel.Role);
+            }
         }
     }
 }
