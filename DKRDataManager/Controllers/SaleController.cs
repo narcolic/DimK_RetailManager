@@ -10,6 +10,7 @@ namespace DKRDataManager.Controllers
     [Authorize]
     public class SaleController : ApiController
     {
+        [Authorize(Roles = "Cashier")]
         public void Post(SaleModel sale)
         {
             if (sale is null)
@@ -21,6 +22,7 @@ namespace DKRDataManager.Controllers
             new SaleData().SaveSale(sale, userId);
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         [Route("GetSalesReport")]
         public List<SaleReportModel> GetSalesReport() => new SaleData().GetSalesReport();
     }
