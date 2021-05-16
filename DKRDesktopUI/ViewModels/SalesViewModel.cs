@@ -4,10 +4,13 @@ using DKRDesktopUI.Library.Api;
 using DKRDesktopUI.Library.Helpers;
 using DKRDesktopUI.Library.Models;
 using DKRDesktopUI.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace DKRDesktopUI.ViewModels
 {
@@ -17,6 +20,8 @@ namespace DKRDesktopUI.ViewModels
         private readonly IMapper _mapper;
         private readonly IProductEndpoint _productEndpoint;
         private readonly ISaleEndpoint _saleEndpoint;
+        private readonly StatusInfoViewModel _status;
+        private readonly IWindowManager _window;
         private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
         private int _itemQuantity = 1;
         private BindingList<ProductDisplayModel> _products;
@@ -24,12 +29,14 @@ namespace DKRDesktopUI.ViewModels
         private ProductDisplayModel _selectedProduct;
 
         public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint,
-            IMapper mapper)
+            IMapper mapper, StatusInfoViewModel status, IWindowManager window)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
             _saleEndpoint = saleEndpoint;
             _mapper = mapper;
+            _status = status;
+            _window = window;
         }
 
         public bool CanAddToCart => ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity;
@@ -158,7 +165,29 @@ namespace DKRDesktopUI.ViewModels
         protected override async void OnViewLoaded(object view)
         {
             base.OnViewLoaded(view);
-            await LoadProductsAsync();
+            try
+            {
+                await LoadProductsAsync();
+            }
+            catch (Exception ex)
+            {
+                dynamic settings = new ExpandoObject();
+                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                settings.ResizeMode = ResizeMode.NoResize;
+                settings.Title = "System Error";
+
+                if (ex.Message == "Unauthorized")
+                {
+                    _status.UpdateMessage("Unauthorized Access", "You dont have permission to interact with sales form");
+                }
+                else
+                {
+                    _status.UpdateMessage("Fatal Excepetion", ex.Message);
+                }
+                _window.ShowDialog(_status, null, settings);
+
+                TryClose();
+            }
         }
 
         private decimal CalculateSubTotal() => Cart.Sum(i => i.Product.RetailPrice * i.QuantityInCart);
