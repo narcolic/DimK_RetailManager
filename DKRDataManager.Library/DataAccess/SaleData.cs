@@ -1,5 +1,6 @@
 ﻿using DKRDataManager.Library.Internal.DataAccess;
 using DKRDataManager.Library.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,12 +8,19 @@ namespace DKRDataManager.Library.DataAccess
 {
     public class SaleData
     {
-        public List<SaleReportModel> GetSalesReport() => new SqlDataAccess().LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "DKRData");
+        private readonly IConfiguration _config;
+
+        public SaleData(IConfiguration config)
+        {
+            _config = config;
+        }
+
+        public List<SaleReportModel> GetSalesReport() => new SqlDataAccess(_config).LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "DKRData");
 
         public void SaveSale(SaleModel saleInfo, string cashierId)
         {
             var saleDetails = new List<SaleDetailDbModel>();
-            var products = new ProductData();
+            var products = new ProductData(_config);
 
             foreach (var item in saleInfo.SaleDetails)
             {
@@ -37,7 +45,7 @@ namespace DKRDataManager.Library.DataAccess
             };
             sale.Total = sale.SubTotal + sale.Tax;
 
-            using (SqlDataAccess sql = new SqlDataAccess())
+            using (SqlDataAccess sql = new SqlDataAccess(_config))
             {
                 try
                 {

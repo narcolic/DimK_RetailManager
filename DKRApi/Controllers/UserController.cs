@@ -5,6 +5,7 @@ using DKRDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -17,13 +18,15 @@ namespace DKRApi.Controllers
     [Authorize]
     public class UserController : ControllerBase
     {
+        private readonly IConfiguration _config;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IConfiguration config)
         {
             _context = context;
             _userManager = userManager;
+            _config = config;
         }
 
         [Authorize(Roles = "Admin")]
@@ -65,7 +68,7 @@ namespace DKRApi.Controllers
         public UserModel GetById()
         {
             string userID = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            UserData data = new UserData();
+            UserData data = new UserData(_config);
 
             return data.GetUserById(userID).First();
         }

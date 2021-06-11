@@ -2,6 +2,7 @@
 using DKRDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace DKRApi.Controllers
@@ -11,10 +12,17 @@ namespace DKRApi.Controllers
     [Authorize]
     public class InventoryController : ControllerBase
     {
+        private readonly IConfiguration _config;
+
+        public InventoryController(IConfiguration config)
+        {
+            _config = config;
+        }
+
         [Authorize(Roles = "Admin,Manager")]
-        public List<InventoryModel> Get() => new InventoryData().GetInventory();
+        public List<InventoryModel> Get() => new InventoryData(_config).GetInventory();
 
         [Authorize(Roles = "Admin")]
-        public void Post(InventoryModel item) => new InventoryData().SaveInventoryRecord(item);
+        public void Post(InventoryModel item) => new InventoryData(_config).SaveInventoryRecord(item);
     }
 }
