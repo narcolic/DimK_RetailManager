@@ -11,13 +11,11 @@ namespace DKRDesktopUI.ViewModels
     {
         private readonly IAPIHelper _apiHelper;
         private readonly IEventAggregator _events;
-        private readonly SalesViewModel _salesViewModel;
         private readonly ILoggedInUserModel _user;
 
-        public ShellViewModel(IEventAggregator events, SalesViewModel salesViewModel, ILoggedInUserModel user, IAPIHelper apiHelper)
+        public ShellViewModel(IEventAggregator events, ILoggedInUserModel user, IAPIHelper apiHelper)
         {
             _events = events;
-            _salesViewModel = salesViewModel;
             _user = user;
             _apiHelper = apiHelper;
             _events.SubscribeOnPublishedThread(this);
@@ -31,7 +29,7 @@ namespace DKRDesktopUI.ViewModels
 
         public async Task HandleAsync(LogOnEvent message, CancellationToken cancellationToken)
         {
-            await ActivateItemAsync(_salesViewModel, cancellationToken);
+            await ActivateItemAsync(IoC.Get<SalesViewModel>(), cancellationToken);
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
 
