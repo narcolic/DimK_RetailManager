@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using System.Threading.Tasks;
 
 namespace DKRDesktopUI.ViewModels
 {
@@ -7,7 +8,7 @@ namespace DKRDesktopUI.ViewModels
         public string Header { get; private set; }
         public string Message { get; private set; }
 
-        public void Close() => TryClose();
+        public async Task CloseAsync() => await TryCloseAsync();
 
         public void UpdateMessage(string header, string message)
         {

@@ -2,6 +2,8 @@
 using DKRDesktopUI.EventModels;
 using DKRDesktopUI.Library.Api;
 using DKRDesktopUI.Library.Models;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DKRDesktopUI.ViewModels
 {
@@ -18,29 +20,29 @@ namespace DKRDesktopUI.ViewModels
             _salesViewModel = salesViewModel;
             _user = user;
             _apiHelper = apiHelper;
-            _events.Subscribe(this);
+            _events.SubscribeOnPublishedThread(this);
 
-            ActivateItem(IoC.Get<LoginViewModel>());
+            ActivateItemAsync(IoC.Get<LoginViewModel>());
         }
 
         public bool IsLoggedIn => !string.IsNullOrWhiteSpace(_user.Token);
 
-        public void ExitApplication() => TryClose();
+        public void ExitApplication() => TryCloseAsync();
 
-        public void Handle(LogOnEvent message)
+        public async Task HandleAsync(LogOnEvent message, CancellationToken cancellationToken)
         {
-            ActivateItem(_salesViewModel);
+            await ActivateItemAsync(_salesViewModel, cancellationToken);
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
 
-        public void LogOut()
+        public async Task LogOutAsync()
         {
             _user.ResetUserModel();
             _apiHelper.LogOffUser();
-            ActivateItem(IoC.Get<LoginViewModel>());
+            await ActivateItemAsync(IoC.Get<LoginViewModel>());
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
 
-        public void UserManagement() => ActivateItem(IoC.Get<UserDisplayViewModel>());
+        public async Task UserManagementAsync() => await ActivateItemAsync(IoC.Get<UserDisplayViewModel>());
     }
 }

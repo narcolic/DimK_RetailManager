@@ -19,9 +19,9 @@ namespace DKRDesktopUI.ViewModels
         private readonly IWindowManager _window;
         private BindingList<string> _availableRoles = new BindingList<string>();
         private string _selectedAvailableRole;
-        private string _selectedUserRole;
         private UserModel _selectedUser;
         private string _selectedUserName;
+        private string _selectedUserRole;
         private BindingList<string> _userRoles = new BindingList<string>();
         private BindingList<UserModel> _users;
 
@@ -53,16 +53,6 @@ namespace DKRDesktopUI.ViewModels
             }
         }
 
-        public string SelectedUserRole
-        {
-            get { return _selectedUserRole; }
-            set
-            {
-                _selectedUserRole = value;
-                NotifyOfPropertyChange(() => SelectedUserRole);
-            }
-        }
-
         public UserModel SelectedUser
         {
             get { return _selectedUser; }
@@ -83,6 +73,16 @@ namespace DKRDesktopUI.ViewModels
             {
                 _selectedUserName = value;
                 NotifyOfPropertyChange(() => SelectedUserName);
+            }
+        }
+
+        public string SelectedUserRole
+        {
+            get { return _selectedUserRole; }
+            set
+            {
+                _selectedUserRole = value;
+                NotifyOfPropertyChange(() => SelectedUserRole);
             }
         }
 
@@ -144,9 +144,9 @@ namespace DKRDesktopUI.ViewModels
                 {
                     _status.UpdateMessage("Fatal Excepetion", ex.Message);
                 }
-                _window.ShowDialog(_status, null, settings);
+                await _window.ShowDialogAsync(_status, null, settings);
 
-                TryClose();
+                await TryCloseAsync();
             }
         }
 

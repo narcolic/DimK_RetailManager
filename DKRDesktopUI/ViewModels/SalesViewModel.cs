@@ -184,9 +184,9 @@ namespace DKRDesktopUI.ViewModels
                 {
                     _status.UpdateMessage("Fatal Excepetion", ex.Message);
                 }
-                _window.ShowDialog(_status, null, settings);
+                _window.ShowDialogAsync(_status, null, settings);
 
-                TryClose();
+                await TryCloseAsync();
             }
         }
 
