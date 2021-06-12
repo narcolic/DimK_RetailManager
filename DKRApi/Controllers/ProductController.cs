@@ -19,6 +19,7 @@ namespace DKRApi.Controllers
             _config = config;
         }
 
+        [HttpGet]
         public List<ProductModel> Get() => new ProductData(_config).Products;
     }
 }

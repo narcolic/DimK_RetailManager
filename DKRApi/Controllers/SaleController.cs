@@ -23,9 +23,11 @@ namespace DKRApi.Controllers
 
         [Authorize(Roles = "Admin,Manager")]
         [Route("GetSalesReport")]
+        [HttpGet]
         public List<SaleReportModel> GetSalesReport() => new SaleData(_config).GetSalesReport();
 
         [Authorize(Roles = "Cashier")]
+        [HttpPost]
         public void Post(SaleModel sale)
         {
             if (sale is null)

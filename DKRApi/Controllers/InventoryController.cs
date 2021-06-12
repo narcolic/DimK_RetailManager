@@ -20,9 +20,11 @@ namespace DKRApi.Controllers
         }
 
         [Authorize(Roles = "Admin,Manager")]
+        [HttpGet]
         public List<InventoryModel> Get() => new InventoryData(_config).GetInventory();
 
         [Authorize(Roles = "Admin")]
+        [HttpPost]
         public void Post(InventoryModel item) => new InventoryData(_config).SaveInventoryRecord(item);
     }
 }

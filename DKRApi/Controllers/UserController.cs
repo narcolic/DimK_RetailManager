@@ -31,7 +31,7 @@ namespace DKRApi.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        [Route("api/User/Admin/AddRole")]
+        [Route("Admin/AddRole")]
         public async Task AddRoleAsync(UserRolePairModel pairModel)
         {
             var user = await _userManager.FindByIdAsync(pairModel.UserId);
@@ -40,7 +40,7 @@ namespace DKRApi.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        [Route("api/User/Admin/GetAllRoles")]
+        [Route("Admin/GetAllRoles")]
         public Dictionary<string, string> GetAllRoles()
         {
             return _context.Roles.ToDictionary(role => role.Id, role => role.Name);
@@ -48,20 +48,27 @@ namespace DKRApi.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        [Route("api/User/Admin/GetAllUsers")]
+        [Route("Admin/GetAllUsers")]
         public List<ApplicationUserModel> GetAllUsers()
         {
-            var userRoles = _context.UserRoles.Join(_context.Roles.ToList(),
-                    userRole => userRole.RoleId,
-                    role => role.Id,
-                    (userRole, role) => new { userRole.UserId, userRole.RoleId, role.Name });
+            var users = _context.Users.ToList();
 
-            return _context.Users.Select(u => new ApplicationUserModel()
+            var userRoles = from ur in _context.UserRoles
+                            join r in _context.Roles on ur.RoleId equals r.Id
+                            select new { ur.UserId, ur.RoleId, r.Name };
+
+            return users.Aggregate(new List<ApplicationUserModel>(), (output, user) =>
             {
-                Id = u.Id,
-                Email = u.Email,
-                Roles = userRoles.Where(ur => ur.UserId == u.Id).ToDictionary(key => key.RoleId, val => val.Name)
-            }).ToList();
+                ApplicationUserModel u = new ApplicationUserModel
+                {
+                    Id = user.Id,
+                    Email = user.Email
+                };
+
+                u.Roles = userRoles.Where(x => x.UserId == u.Id).ToDictionary(key => key.RoleId, val => val.Name);
+                output.Add(u);
+                return output;
+            });
         }
 
         [HttpGet]
@@ -75,7 +82,7 @@ namespace DKRApi.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        [Route("api/User/Admin/RemoveRole")]
+        [Route("Admin/RemoveRole")]
         public async Task RemoveRoleAsync(UserRolePairModel pairModel)
         {
             var user = await _userManager.FindByIdAsync(pairModel.UserId);
