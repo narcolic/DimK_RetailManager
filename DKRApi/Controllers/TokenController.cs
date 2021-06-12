@@ -1,6 +1,7 @@
 ﻿using DKRApi.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -14,13 +15,15 @@ namespace DKRApi.Controllers
 {
     public class TokenController : Controller
     {
+        private readonly IConfiguration _config;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public TokenController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public TokenController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IConfiguration config)
         {
             _context = context;
             _userManager = userManager;
+            _config = config;
         }
 
         [Route("/token")]
@@ -55,7 +58,7 @@ namespace DKRApi.Controllers
             var token = new JwtSecurityToken(
                 new JwtHeader(
                     new SigningCredentials(
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes("SecretKeyHerePleasedontCopyThis")), SecurityAlgorithms.HmacSha256)),
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetValue<string>("Secrets:SecurityKey"))), SecurityAlgorithms.HmacSha256)),
                 new JwtPayload(claims));
 
             return new
