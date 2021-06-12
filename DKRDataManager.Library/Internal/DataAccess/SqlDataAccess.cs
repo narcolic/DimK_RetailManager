@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -8,15 +9,17 @@ using System.Linq;
 
 namespace DKRDataManager.Library.Internal.DataAccess
 {
-    internal class SqlDataAccess : IDisposable
+    public class SqlDataAccess : IDisposable, ISqlDataAccess
     {
         private readonly IConfiguration _config;
+        private readonly ILogger<SqlDataAccess> _logger;
         private IDbConnection _connection;
         private IDbTransaction _transaction;
 
-        public SqlDataAccess(IConfiguration config)
+        public SqlDataAccess(IConfiguration config, ILogger<SqlDataAccess> logger)
         {
             _config = config;
+            _logger = logger;
         }
 
         public void CommitTransaction()
@@ -27,15 +30,15 @@ namespace DKRDataManager.Library.Internal.DataAccess
 
         public void Dispose()
         {
-            if (_connection.State != ConnectionState.Closed)
+            if (_connection?.State != ConnectionState.Closed)
             {
                 try
                 {
                     CommitTransaction();
                 }
-                catch
+                catch(Exception ex)
                 {
-                    //Log exception
+                    _logger.LogError(ex, "Commit txn failed in the dispose method");
                 }
             }
 

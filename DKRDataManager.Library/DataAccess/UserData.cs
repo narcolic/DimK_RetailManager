@@ -1,24 +1,18 @@
 ﻿using DKRDataManager.Library.Internal.DataAccess;
 using DKRDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace DKRDataManager.Library.DataAccess
 {
-    public class UserData
+    public class UserData : IUserData
     {
-        private readonly IConfiguration _config;
+        private readonly ISqlDataAccess _sql;
 
-        public UserData(IConfiguration config)
+        public UserData(ISqlDataAccess sql)
         {
-            _config = config;
+            _sql = sql;
         }
 
-        public List<UserModel> GetUserById(string id)
-        {
-            var parameters = new { Id = id };
-
-            return new SqlDataAccess(_config).LoadData<UserModel, dynamic>("dbo.spUserLookup", parameters, "DKRData");
-        }
+        public List<UserModel> GetUserById(string Id) => _sql.LoadData<UserModel, dynamic>("dbo.spUserLookup", new { Id }, "DKRData");
     }
 }

@@ -1,21 +1,20 @@
 ﻿using DKRDataManager.Library.Internal.DataAccess;
 using DKRDataManager.Library.Models;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace DKRDataManager.Library.DataAccess
 {
-    public class InventoryData
+    public class InventoryData : IInventoryData
     {
-        private readonly IConfiguration _config;
+        private readonly ISqlDataAccess _sql;
 
-        public InventoryData(IConfiguration config)
+        public InventoryData(ISqlDataAccess sql)
         {
-            _config = config;
+            _sql = sql;
         }
 
-        public List<InventoryModel> GetInventory() => new SqlDataAccess(_config).LoadData<InventoryModel, dynamic>("dbo.spInventory_GetAll", new { }, "DKRData");
+        public List<InventoryModel> GetInventory() => _sql.LoadData<InventoryModel, dynamic>("dbo.spInventory_GetAll", new { }, "DKRData");
 
-        public void SaveInventoryRecord(InventoryModel item) => new SqlDataAccess(_config).SaveData("dbo.spInventory_Insert", item, "DKRData");
+        public void SaveInventoryRecord(InventoryModel item) => _sql.SaveData("dbo.spInventory_Insert", item, "DKRData");
     }
 }

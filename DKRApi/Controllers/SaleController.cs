@@ -2,7 +2,6 @@
 using DKRDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -14,17 +13,17 @@ namespace DKRApi.Controllers
     [Authorize]
     public class SaleController : ControllerBase
     {
-        private readonly IConfiguration _config;
+        private readonly ISaleData _saleData;
 
-        public SaleController(IConfiguration config)
+        public SaleController(ISaleData saleData)
         {
-            _config = config;
+            _saleData = saleData;
         }
 
         [Authorize(Roles = "Admin,Manager")]
         [Route("GetSalesReport")]
         [HttpGet]
-        public List<SaleReportModel> GetSalesReport() => new SaleData(_config).GetSalesReport();
+        public List<SaleReportModel> GetSalesReport() => _saleData.GetSalesReport();
 
         [Authorize(Roles = "Cashier")]
         [HttpPost]
@@ -36,7 +35,7 @@ namespace DKRApi.Controllers
             }
 
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            new SaleData(_config).SaveSale(sale, userId);
+            _saleData.SaveSale(sale, userId);
         }
     }
 }

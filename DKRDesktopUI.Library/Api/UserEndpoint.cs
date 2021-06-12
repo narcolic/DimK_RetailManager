@@ -17,7 +17,7 @@ namespace DKRDesktopUI.Library.Api
 
         public async Task AddUserToRoleAsync(string userId, string role)
         {
-            using (HttpResponseMessage response = await _apiHelper.ApiClient.PostAsJsonAsync("/api/User/Admin/AddRoleAsync", new { userId, role }))
+            using (HttpResponseMessage response = await _apiHelper.ApiClient.PostAsJsonAsync("/api/User/Admin/AddRole", new { userId, role }))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -58,7 +58,7 @@ namespace DKRDesktopUI.Library.Api
 
         public async Task RemoveUserFromRoleAsync(string userId, string role)
         {
-            using (HttpResponseMessage response = await _apiHelper.ApiClient.PostAsJsonAsync("/api/User/Admin/RemoveRoleAsync", new { userId, role }))
+            using (HttpResponseMessage response = await _apiHelper.ApiClient.PostAsJsonAsync("/api/User/Admin/RemoveRole", new { userId, role }))
             {
                 if (!response.IsSuccessStatusCode)
                 {

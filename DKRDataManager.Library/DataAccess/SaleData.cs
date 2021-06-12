@@ -6,21 +6,22 @@ using System.Linq;
 
 namespace DKRDataManager.Library.DataAccess
 {
-    public class SaleData
+    public class SaleData : ISaleData
     {
-        private readonly IConfiguration _config;
+        private readonly ISqlDataAccess _sql;
+        private readonly IProductData _productData;
 
-        public SaleData(IConfiguration config)
+        public SaleData(ISqlDataAccess sql, IProductData productData)
         {
-            _config = config;
+            _sql = sql;
+            _productData = productData;
         }
 
-        public List<SaleReportModel> GetSalesReport() => new SqlDataAccess(_config).LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "DKRData");
+        public List<SaleReportModel> GetSalesReport() => _sql.LoadData<SaleReportModel, dynamic>("dbo.spSale_SaleReport", new { }, "DKRData");
 
         public void SaveSale(SaleModel saleInfo, string cashierId)
         {
             var saleDetails = new List<SaleDetailDbModel>();
-            var products = new ProductData(_config);
 
             foreach (var item in saleInfo.SaleDetails)
             {
@@ -30,7 +31,7 @@ namespace DKRDataManager.Library.DataAccess
                     Quantity = item.Quantity
                 };
 
-                var productInfo = products.GetProductById(detail.ProductId);
+                var productInfo = _productData.GetProductById(detail.ProductId);
                 detail.PurchasePrice = productInfo.RetailPrice * detail.Quantity;
                 detail.Tax = productInfo.IsTaxable ? detail.PurchasePrice * ConfigHelper.GetTaxRate() : detail.Tax;
 
@@ -45,25 +46,24 @@ namespace DKRDataManager.Library.DataAccess
             };
             sale.Total = sale.SubTotal + sale.Tax;
 
-            using (SqlDataAccess sql = new SqlDataAccess(_config))
-            {
-                try
-                {
-                    sql.StartTransaction("DKRData");
-                    int saleId = sql.SaveDataScalarInTransaction("dbo.spSale_Insert", sale);
 
-                    saleDetails.ForEach(item =>
-                    {
-                        item.SaleId = saleId;
-                        sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
-                    });
-                }
-                catch
+            try
+            {
+                _sql.StartTransaction("DKRData");
+                int saleId = _sql.SaveDataScalarInTransaction("dbo.spSale_Insert", sale);
+
+                saleDetails.ForEach(item =>
                 {
-                    sql.RollBackTransaction();
-                    throw;
-                }
+                    item.SaleId = saleId;
+                    _sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
+                });
             }
+            catch
+            {
+                _sql.RollBackTransaction();
+                throw;
+            }
+
         }
     }
 }

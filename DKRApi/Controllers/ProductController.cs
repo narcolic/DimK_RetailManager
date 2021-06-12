@@ -2,7 +2,6 @@
 using DKRDataManager.Library.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace DKRApi.Controllers
@@ -12,14 +11,14 @@ namespace DKRApi.Controllers
     [Authorize(Roles = "Cashier")]
     public class ProductController : ControllerBase
     {
-        private readonly IConfiguration _config;
+        private readonly IProductData _productData;
 
-        public ProductController(IConfiguration config)
+        public ProductController(IProductData productData)
         {
-            _config = config;
+            _productData = productData;
         }
 
         [HttpGet]
-        public List<ProductModel> Get() => new ProductData(_config).Products;
+        public List<ProductModel> Get() => _productData.Products;
     }
 }
